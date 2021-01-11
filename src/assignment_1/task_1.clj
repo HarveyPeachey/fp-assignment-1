@@ -8,4 +8,4 @@
       (recur (rest values) (conj sqValues (#(* % %) (first values)))))))
 
 
-(squareList [4 4 2 1 1])
+(squareList [4 4 2 1 1 43 123 123 223 1 55 23 123 545 12 765])
