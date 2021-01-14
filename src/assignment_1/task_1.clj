@@ -33,7 +33,3 @@
 
 ;; There probably was a way to implement it using the built in transducers but I thought it would be easier
 ;; to use recursion to solve it.
-
-
-(time (square-list-recur [1 2 3 "oof" [2 2 2]]))
-(time (square-list-map [1 2 3 "oof" [2 2 2]]))
