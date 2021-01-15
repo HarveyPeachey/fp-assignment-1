@@ -7,7 +7,7 @@
 
 (defn square-list-recur [v]
   (lazy-seq
-    (loop [values v sqValues []]
+    (loop [values (seq v) sqValues []]
       (cond
         (empty? values) sqValues
         (number? (first values)) (recur (rest values) (conj sqValues (square (first values))))
