@@ -43,3 +43,10 @@
                  (find-childs-plants "Alice" garden)) "with a child who has a plant on it"
            (is (= ["Clover" "Grass" "Clover" "Clover"]
                  (find-childs-plants "Bob" garden)) "with a child who hasn't got a plant on it")))))))
+
+(deftest lookup-plant-name-test
+  (testing "Looking up a plant name"
+    (testing "when given a shorthand that exists"
+      (is (= ["Violet"] (lookup-plant-name \V)) "of a char")
+      (is (= ["Violet"] (lookup-plant-name "V")) "of a string of length 1"))
+    (is (= [nil] (lookup-plant-name "P")) "when given a shorthand that doesn't exist")))
