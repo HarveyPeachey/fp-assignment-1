@@ -30,6 +30,8 @@
 ;; the check for the value being a number and skipping over a value and not conjing back onto the accumalted vector
 ;; this meant it would do both with only one pass through of the given sequence.
 ;; I also chose a vector to accumlate as I wanted the ability to add to the end of the sequence which list doesn't allow.
+;; Unfortunately this makes the loop eager as it will have to realise the sqValues
+;; each time conj is used to add the next square value so this may make it slower anyway
 
 ;; There probably was a way to implement it using the built in transducers but I thought it would be easier
 ;; to use recursion to solve it.
