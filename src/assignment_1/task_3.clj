@@ -5,7 +5,7 @@
   (let [plant-map {\G "Grass" \C "Clover" \R "Radish" \V "Violet"}]
     (mapv #(get plant-map %) plants)))
 
-(defn get-plants [child garden]
+(defn find-childs-plants [child garden]
   "Retrieves corresponding plants from the garden owned by a given child"
   (let [children ["Alice" "Bob" "Charlie" "David" "Eve" "Fred" "Ginny" "Harriet" "Ileana" "Joseph" "Kincaid" "Larry"]]
     (if (some #(= child %) children)
@@ -21,7 +21,7 @@
   ([child garden]
    (cond
      (string? garden) (recur child (format-garden garden))
-     (and (vector? garden) (vector? (first garden))) (get-plants child garden)
+     (and (vector? garden) (vector? (first garden))) (find-childs-plants child garden)
      :else "Uh oh, that's a not a garden..."))
   ([child]
    (find-plants child [[\V \R \C \G \V \V \R \V \C \G \G \C \C \G \V \R \G \C \V \C \G \C \G \V]
