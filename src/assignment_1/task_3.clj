@@ -10,17 +10,15 @@
       (lookup-plant-name (mapcat #(take 2 (drop (* (.indexOf children child) 2) %)) garden))
       "Sorry that child can't afford plants")))
 
-(def format-garden [[\V \R \C \G \V \V \R \V \C \G \G \C \C \G \V \R \G \C \V \C \G \C \G \V][\V \R \C \C \C \G \C \R \R \G \V \C \G \C \R \V \V \C \V \G \C \G \C \V]])
+(defn format-garden [garden]
+  (vec (mapv vec (partition 24 24 [] garden))))
 
 (defn find-plants
   ([child garden]
    (cond
-     (string? garden) (recur child format-garden)
+     (string? garden) (recur child (format-garden garden))
      (and (vector? garden) (vector? (first garden))) (get-plants child garden)
      :else "Uh oh, that's a not a garden..."))
   ([child]
    (find-plants child [[\V \R \C \G \V \V \R \V \C \G \G \C \C \G \V \R \G \C \V \C \G \C \G \V]
                        [\V \R \C \C \C \G \C \R \R \G \V \C \G \C \R \V \V \C \V \G \C \G \C \V]])))
-
-
-(defn format-garden [garden])
