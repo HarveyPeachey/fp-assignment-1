@@ -16,7 +16,7 @@
       (testing "a string length of 24"
         (is (= [["A" "B" "C" "D" "E" "F" "G" "H" "I" "J" "K" "L" "M" "N" "O" "P" "Q" "R" "S" "T" "U" "V" "W"]]
                (format-garden "ABCDEFGHIJKLMNOPQRSTUVW"))))
-      (testing "a string of more than 24"
+      (testing "a string length of more than 24"
         (is (= [["A" "B" "C" "D" "E" "F" "G" "H" "I" "J" "K" "L" "M" "N" "O" "P" "Q" "R" "S" "T" "U" "V" "W"]
                 ["Y" "Z"]]
                (format-garden "ABCDEFGHIJKLMNOPQRSTUVWXYZ")))))))
