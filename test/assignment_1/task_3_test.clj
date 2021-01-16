@@ -50,4 +50,4 @@
   (testing "Looking up a plant name"
     (testing "when given a shorthand"
       (is (= ["Violet"] (lookup-plant-name "V")) "that exists")
-      (is (= [nil] (lookup-plant-name "P")) "that doesn't exist"))))
+      (is (= [] (lookup-plant-name "P")) "that doesn't exist"))))
