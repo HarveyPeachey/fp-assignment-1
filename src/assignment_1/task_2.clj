@@ -1,8 +1,12 @@
 (ns assignment-1.task_2 "Task 2 - Change Counter")
 
-(defn change-counter [amount]
-  (let [coins [1 5 10 25]]
-    (loop [c coins combinations 0]
-      (if (empty? c)
-       combinations
-       (recur)))))
+(def coins [1 5 10 25])
+
+(defn change-counter [coins amount]
+  (cond (= amount 0) 1
+        (or (< amount 0) (empty? coins)) 0
+        :else
+          (+ (recur (rest c) a) (recur c (- a (first c))))))
+
+
+(change-counter [1 5 10 25] 100)
