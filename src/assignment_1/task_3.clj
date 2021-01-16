@@ -16,7 +16,7 @@
 (defn format-garden [garden]
   "Used to transform garden into a usable format from a single string"
   (let [row-size 24]
-    (vec (mapv vec (partition row-size row-size [] garden)))))
+    (mapv vec (partition row-size row-size [] garden))))
 
 (defn find-plants
   "Entry point function to find plants given a name and an optional garden of plants"
