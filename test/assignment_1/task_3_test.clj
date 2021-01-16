@@ -11,7 +11,9 @@
         (is (= ["Violet" "Violet"]
                (find-plants "Alice" "VVVVV")) "and a correct garden format")
         (is (= "Uh oh, that's a not a garden..."
-               (find-plants "Alice" '("VVV"))) "and an incorrect garden format")))))
+               (find-plants "Alice" '("VVV"))) "and an incorrect garden format")
+        (is (= "Uh oh, that's a not a garden..."
+               (find-plants "Alice" [[\R \C] 1 2 '(\V \V)])) "and a garden format which contains an incorrect row data structure")))))
 
 (deftest format-garden-test
   (testing "Garden formatter"
