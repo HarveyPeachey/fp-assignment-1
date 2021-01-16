@@ -36,7 +36,7 @@
         (testing "that has a default garden of 48 plants"
           (is (= ["Violet" "Radish" "Violet" "Radish"]
                  (find-childs-plants "Alice" garden))  "exists in the class")
-          (is (= "Sorry that child can't afford plants"
+          (is (= "Feed me, Seymour! That child doesn't like plants"
                  (find-childs-plants "Harvey" garden)) "doesn't exist in the class"))
         (testing "that has a obscure garden that's added an extra row"
           (is (= ["Violet" "Radish" "Violet" "Radish" "Grass"]

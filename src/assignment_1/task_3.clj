@@ -10,7 +10,7 @@
   (let [children ["Alice" "Bob" "Charlie" "David" "Eve" "Fred" "Ginny" "Harriet" "Ileana" "Joseph" "Kincaid" "Larry"]]
     (if (some #(= child %) children)
       (lookup-plant-name (mapcat #(take 2 (drop (* (.indexOf children child) 2) %)) garden))
-      "Sorry that child can't afford plants")))
+      "Feed me, Seymour! That child doesn't like plants")))
 
 (defn format-garden [garden]
   "Used to transform garden into a usable format from a single string"
