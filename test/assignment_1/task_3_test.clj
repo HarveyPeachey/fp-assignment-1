@@ -24,21 +24,6 @@
                 [\Y \Z]]
                (format-garden "ABCDEFGHIJKLMNOPQRSTUVWXYZ")))))))
 
-; (deftest find-childs-plants-test
-;   (testing "Finding a childs plants"
-;     (testing "when called with"
-;       (testing "a given child string"
-;         (testing "that has a default garden of 48 plants"
-;           (is (= ["Violet" "Radish" "Violet" "Radish"]
-;                  (find-childs-plants "Alice" [[\V \V]] "exists in the class")))
-;           (is (= "Feed me, Seymour! That child doesn't like plants"
-;                  (find-childs-plants "Harvey" [[\V \V]])) "doesn't exist in the class"))
-;         (testing "that has a obscure garden that's added an extra row"
-;           (is (= ["Violet" "Radish" "Violet" "Radish" "Grass"]
-;                  (find-childs-plants "Alice" [[\V \V]])) "with a child who has a plant on it")
-;           (is (= ["Clover" "Grass" "Clover" "Clover"]
-;                  (find-childs-plants "Bob" [[\V \V]])) "with a child who hasn't got a plant on it"))))))
-
 (deftest find-childs-plants-test
   (let [garden  [[\V \R \C \G \V \V \R \V \C \G \G \C \C \G \V \R \G \C \V \C \G \C \G \V]
                  [\V \R \C \C \C \G \C \R \R \G \V \C \G \C \R \V \V \C \V \G \C \G \C \V]]
