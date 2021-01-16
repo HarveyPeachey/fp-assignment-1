@@ -44,7 +44,6 @@
             (is (= ["Clover" "Grass" "Clover" "Clover"]
                    (find-childs-plants "Bob" garden2)) "with a child who hasn't got a plant on it")))))))
 
-
 (deftest lookup-plant-name-test
   (testing "Looking up a plant name"
     (testing "when given a shorthand"
