@@ -1,4 +1,4 @@
-(ns assignment-1.task_3)
+(ns assignment-1.task_3 "Task 3 - Kindergardeners")
 
 (defn lookup-plant-name [plants]
   "Used to lookup the full name of a plant given it's shorthand character"
