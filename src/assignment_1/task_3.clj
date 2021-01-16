@@ -7,14 +7,16 @@
 
 (defn find-childs-plants [child garden]
   "Retrieves corresponding plants from the garden owned by a given child"
-  (let [children ["Alice" "Bob" "Charlie" "David" "Eve" "Fred" "Ginny" "Harriet" "Ileana" "Joseph" "Kincaid" "Larry"]]
+  (let [children ["Alice" "Bob" "Charlie" "David" "Eve" "Fred" "Ginny" "Harriet" "Ileana" "Joseph" "Kincaid" "Larry"]
+        no-of-plants 2]
     (if (some #(= child %) children)
-      (lookup-plant-name (mapcat #(take 2 (drop (* (.indexOf children child) 2) %)) garden))
+      (lookup-plant-name (mapcat #(take no-of-plants (drop (* (.indexOf children child) no-of-plants) %)) garden))
       "Feed me, Seymour! That child doesn't like plants")))
 
 (defn format-garden [garden]
   "Used to transform garden into a usable format from a single string"
-  (vec (mapv vec (partition 24 24 [] garden))))
+  (let [row-size 24]
+    (vec (mapv vec (partition row-size row-size [] garden)))))
 
 (defn find-plants
   "Entry point function to find plants given a name and an optional garden of plants"
