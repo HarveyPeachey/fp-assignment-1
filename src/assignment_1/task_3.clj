@@ -23,7 +23,7 @@
   ([child garden]
    (cond
      (string? garden) (recur child (format-garden garden))
-     (and (vector? garden) (vector? (first garden))) (find-childs-plants child garden)
+     (and (vector? garden) (not (some (complement vector?) garden))) (find-childs-plants child garden)
      :else "Uh oh, that's a not a garden..."))
   ([child]
    (find-plants child [[\V \R \C \G \V \V \R \V \C \G \G \C \C \G \V \R \G \C \V \C \G \C \G \V]
