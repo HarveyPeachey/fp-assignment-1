@@ -2,15 +2,15 @@
 
 (defn lookup-plant-name [plants]
   "Used to lookup the full name of a plant given it's shorthand character"
-  (let [plant-map {\G "Grass" \C "Clover" \R "Radish" \V "Violet"}]
-    (mapv #(get plant-map %) plants)))
+  (let [plant-names {\G "Grass" \C "Clover" \R "Radish" \V "Violet"}]
+    (mapv #(get plant-names %) plants)))
 
 (defn find-childs-plants [child garden]
   "Retrieves corresponding plants from the garden owned by a given child"
   (let [children ["Alice" "Bob" "Charlie" "David" "Eve" "Fred" "Ginny" "Harriet" "Ileana" "Joseph" "Kincaid" "Larry"]
-        no-of-plants 2]
+        no-plants-row 2]
     (if (some #(= child %) children)
-      (lookup-plant-name (mapcat #(take no-of-plants (drop (* (.indexOf children child) no-of-plants) %)) garden))
+      (lookup-plant-name (mapcat #(take no-plants-row (drop (* (.indexOf children child) no-plants-row) %)) garden))
       "Feed me, Seymour! That child doesn't like plants")))
 
 (defn format-garden [garden]
