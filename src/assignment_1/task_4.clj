@@ -71,14 +71,32 @@
                           (apply max)
                           (conj r))))))
 
-(defn find-warmest-year
+(defn average
+  [numbers]
+  (/ (reduce + numbers) (count numbers)))
+
+(defn average-year-temps
+  []
+  (loop [y 1772 r []]
+    (if (> y 2020)
+      r
+      (recur (inc y) (conj r [y (average (map :temperature (filter #(= (:year %) y) (get-formatted-data-memo))))])))))
+
+(def average-year-temps-memo
+  "Memoizes the get-formatted-data function so it doesn't have to process the data when recalled"
+  (memoize average-year-temps))
+
+(defn find-warmest-and-coldest-year
   "Finds warmest year"
   []
-  (reduce + (map :temperature (filter #(= (:year %) 1772) data))))
+  (do (str "Warmest: " (last (sort-by last (average-year-temps-memo))) " "
+           "Coldest: " (first (sort-by last (average-year-temps-memo))))))
 
-(defn find-mean-temp-month
-  []
-  (reduce + (map :temperature (filter #(= (:year %) 1772) data))))
+
+;
+; (defn find-mean-temp-month
+;   []
+;   (reduce + (map :temperature (filter #(= (:year %) 1772) data))))
 
 ; (defn find-warmest-day-each-month
 ;   "Finds warmest day for each calendar month"
