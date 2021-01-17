@@ -6,8 +6,6 @@
   []
   (mapv vec (partition 14 (mapv #(Float/parseFloat %) (str/split (str/triml (slurp "https://www.metoffice.gov.uk/hadobs/hadcet/cetdl1772on.dat")) #"\s+")))))
 
-(def get-data-memo (memoize get-data))
-
 (defn create-record
   [data]
   (loop [x 2 a []]
@@ -17,7 +15,9 @@
 
 (defn get-formatted-data
   []
-  (mapcat #(create-record %) (get-data-memo)))
+  (mapcat #(create-record %) (get-data)))
+
+(def get-formatted-data-memo (memoize get-formatted-data))
 
 (defn find-warmest-day-each-month
   "Finds warmest day for each calendar month"
@@ -25,7 +25,7 @@
   (loop [m 1 r []]
     (if (> m 12)
       r
-      (recur (inc m) (conj r (apply max (map :temperature (filter #(= (:month %) m) (vec (get-formatted-data))))))))))
+      (recur (inc m) (conj r (apply max (map :temperature (filter #(= (:month %) m) (vec (get-formatted-data-memo))))))))))
 
 (defn find-warmest-year
   "Finds warmest year"
