@@ -83,10 +83,10 @@
   (loop [y 1772 r []]
     (if (> y 2020)
       r
-      (recur (inc y) (conj r [y (->> (get-formatted-data-memo)
-                                     (filter #(= (:year %) y))
-                                     (map :temperature)
-                                     (average))])))))
+      (recur (inc y) (conj r {:year y :temperature (->> (get-formatted-data-memo)
+                                                        (filter #(= (:year %) y))
+                                                        (map :temperature)
+                                                        (average))})))))
 
 (def average-year-temps-memo
   "Memoizes the get-formatted-data function so it doesn't have to process the data when recalled"
@@ -95,8 +95,8 @@
 (defn find-warmest-and-coldest-year
   "Finds warmest year"
   []
-  (do (str "Warmest: " (last (sort-by last (average-year-temps-memo))) " "
-           "Coldest: " (first (sort-by last (average-year-temps-memo))))))
+  (do (str "Warmest: " ((juxt :year :temperature) (last (sort-by :temperature (average-year-temps-memo)))) " "
+           "Coldest: " ((juxt :year :temperature) (first (sort-by :temperature (average-year-temps-memo)))))))
 
 
 ;
