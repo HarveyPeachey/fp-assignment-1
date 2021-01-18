@@ -18,6 +18,10 @@
 (s/def ::weather-record
   (s/keys :req-un [::day ::month ::year ::temperature]))
 
+(def data [{:year 1 :month 1}
+           {:year 2 :month 1}
+           {}])
+
 
 (defn get-data
   "Slurps the met office weather data and stores each line in a two dimensional array"
@@ -58,6 +62,27 @@
   "Memoizes the get-formatted-data function so it doesn't have to process the data when recalled"
   (memoize get-formatted-data))
 
+(defn get-data-by-month
+  []
+  (sort-by :month (get-formatted-data-memo)))
+
+(defn get-data-by-year
+  []
+  (sort-by :year (get-formatted-data-memo)))
+
+(defn get-data-by-year-month
+  []
+  (sort-by (juxt :year :month) (get-formatted-data-memo)))
+
+(def get-data-by-month-memo
+  (memoize get-data-by-month))
+
+(def get-data-by-year-memo
+  (memoize get-data-by-year))
+
+(def get-data-by-year-month-memo
+  (memoize get-data-by-year-month))
+
 (defn lookup-month-name [month]
   "Used to lookup the name of a month"
   (let [month-names ["January" "February" "March" "April" "May" "June" "July" "August" "September" "October" "November" "December"]]
@@ -69,8 +94,9 @@
   (loop [m 1 r []]
     (if (> m 12)
       r
-      (recur (inc m) (conj r (->> (get-formatted-data-memo)
-                                  (filter #(= (:month %) m))
+      (recur (inc m) (conj r (->> (get-data-by-month-memo)
+                                  (drop-while #(< (:month %) m))
+                                  (take-while #(< (:month %) (+ m 1)))
                                   (sort-by :temperature)
                                   (last)))))))
 
@@ -83,8 +109,9 @@
   (loop [y 1772 r []]
     (if (> y 2020)
       r
-      (recur (inc y) (conj r {:year y :temperature (->> (get-formatted-data-memo)
-                                                        (filter #(= (:year %) y))
+      (recur (inc y) (conj r {:year y :temperature (->> (get-data-by-year-memo)
+                                                        (drop-while #(< (:year %) y))
+                                                        (take-while #(< (:year %) (+ y 1)))
                                                         (map :temperature)
                                                         (average))})))))
 
@@ -98,11 +125,34 @@
   (do (str "Warmest: " ((juxt :year :temperature) (last (sort-by :temperature (average-year-temps-memo)))) " "
            "Coldest: " ((juxt :year :temperature) (first (sort-by :temperature (average-year-temps-memo)))))))
 
+(defn mean-temp-month
+  ([]
+   (loop [m 1 r []]
+     (if (> m 12)
+       r
+       (recur (inc m) (conj r {:month m :temperature (->> (get-data-by-month-memo)
+                                                          (drop-while #(< (:month %) m))
+                                                          (take-while #(< (:month %) (+ m 1)))
+                                                          (map :temperature)
+                                                          (average))})))))
+  ([y]
+   (loop [m 1 r []]
+     (if (> m 12)
+       r
+       (recur (inc m) (conj r {:year y :month m :temperature (->> (get-data-by-year-month-memo)
+                                                                  (drop-while #(< (:year %) y))
+                                                                  (take-while #(< (:year %) (+ y 1)))
+                                                                  (drop-while #(< (:month %) m))
+                                                                  (take-while #(< (:month %) (+ m 1)))
+                                                                  (map :temperature)
+                                                                  (average))}))))))
 
-;
-; (defn find-mean-temp-month
-;   []
-;   (reduce + (map :temperature (filter #(= (:year %) 1772) data))))
+(defn mean-temp-month-each-year
+  []
+  (loop [y 1772 r []]
+    (if (> y 2020)
+      r
+      (recur (inc y) (concat r (mean-temp-month y))))))
 
 ; (defn find-warmest-day-each-month
 ;   "Finds warmest day for each calendar month"
