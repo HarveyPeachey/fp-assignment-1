@@ -58,18 +58,22 @@
   "Memoizes the get-formatted-data function so it doesn't have to process the data when recalled"
   (memoize get-formatted-data))
 
+(defn lookup-month-name [month]
+  "Used to lookup the name of a month"
+  (let [month-names ["January" "February" "March" "April" "May" "June" "July" "August" "September" "October" "November" "December"]]
+    (get month-names month)))
+
 (defn find-warmest-day-each-month
   "Finds warmest day for each calendar month"
   []
   (loop [m 1 r []]
     (if (> m 12)
       r
-      (recur (inc m) (->> (get-formatted-data-memo)
-                          (vec)
-                          (filter #(= (:month %) m))
-                          (map :temperature)
-                          (apply max)
-                          (conj r))))))
+      (recur (inc m) (conj r [(lookup-month-name (- m 1)) (->> (get-formatted-data-memo)
+                                                               (vec)
+                                                               (filter #(= (:month %) m))
+                                                               (map :temperature)
+                                                               (apply max))])))))
 
 (defn average
   [numbers]
@@ -80,7 +84,10 @@
   (loop [y 1772 r []]
     (if (> y 2020)
       r
-      (recur (inc y) (conj r [y (average (map :temperature (filter #(= (:year %) y) (get-formatted-data-memo))))])))))
+      (recur (inc y) (conj r [y (->> (get-formatted-data-memo)
+                                     (filter #(= (:year %) y))
+                                     (map :temperature)
+                                     (average))])))))
 
 (def average-year-temps-memo
   "Memoizes the get-formatted-data function so it doesn't have to process the data when recalled"
