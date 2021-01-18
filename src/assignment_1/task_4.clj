@@ -69,11 +69,10 @@
   (loop [m 1 r []]
     (if (> m 12)
       r
-      (recur (inc m) (conj r [(lookup-month-name (- m 1)) (->> (get-formatted-data-memo)
-                                                               (vec)
-                                                               (filter #(= (:month %) m))
-                                                               (map :temperature)
-                                                               (apply max))])))))
+      (recur (inc m) (conj r (->> (get-formatted-data-memo)
+                                  (filter #(= (:month %) m))
+                                  (sort-by :temperature)
+                                  (last)))))))
 
 (defn average
   [numbers]
