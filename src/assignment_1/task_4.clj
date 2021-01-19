@@ -126,36 +126,21 @@
            "Coldest: " ((juxt :year :temperature) (first (sort-by :temperature (average-year-temps-memo)))))))
 
 (defn mean-temp-month
-  ([]
-   (loop [m 1 r []]
-     (if (> m 12)
-       r
-       (recur (inc m) (conj r {:month m :temperature (->> (get-data-by-month-memo)
-                                                          (drop-while #(< (:month %) m))
-                                                          (take-while #(< (:month %) (+ m 1)))
-                                                          (map :temperature)
-                                                          (average))})))))
-  ([y]
-   (loop [m 1 r []]
-     (if (> m 12)
-       r
-       (recur (inc m) (conj r {:year y :month m :temperature (->> (get-data-by-year-month-memo)
-                                                                  (drop-while #(< (:year %) y))
-                                                                  (take-while #(< (:year %) (+ y 1)))
-                                                                  (drop-while #(< (:month %) m))
-                                                                  (take-while #(< (:month %) (+ m 1)))
-                                                                  (map :temperature)
-                                                                  (average))}))))))
-
-(defn mean-temp-month-each-year
   []
-  (loop [y 1772 r []]
-    (if (> y 2020)
-      r
-      (recur (inc y) (concat r (mean-temp-month y))))))
+  (map
+    (fn [[key values]]
+      {:month key
+       :temperature (average (map :temperature values))})
+    (group-by :month (get-formatted-data-memo))))
 
-(def mean-temp-month-each-year-memo
-  (memoize mean-temp-month-each-year))
+(defn mean-temp-month-year
+  []
+  (map
+    (fn [[key values]]
+      {:year (first key)
+       :month (second key)
+       :temperature (average (map :temperature values))})
+    (group-by (juxt :year :month) (get-formatted-data-memo))))
 
 (defn smallest-variation [x coll]
   (take 1 (sort-by :temperature #(< (Math/abs (- x %1)) (Math/abs (- x %2))) coll)))
@@ -163,12 +148,11 @@
 (defn greatest-variation [x coll]
   (take 1 (sort-by :temperature #(> (Math/abs (- x %1)) (Math/abs (- x %2))) coll)))
 
-(smallest-variation 34.538411711361576 (filter #(= (:month %) 1) (mean-temp-month-each-year-memo)))
-
-; (defn find-warmest-day-each-month
-;   "Finds warmest day for each calendar month"
-;   []
-;   (loop [m 1 r []]
-;     (if (> m 12)
-;       r
-;       (recur (inc m) (conj r (apply max (map :temperature (take-while #(< (:month %) (+ m 1)) (drop-while #(< (:month %) m) (sort-by :month (vec (get-formatted-data-memo))))))))))))
+(defn greatest-and-smallest-variation
+  []
+  (map
+    (fn [[key values] value2]
+       (str "Greatest and Smallest Variation for " (lookup-month-name (- key 1)) " "
+            (pr-str (concat (map :year (greatest-variation (:temperature value2) values))
+                            (map :year (smallest-variation (:temperature value2) values))))))
+    (sort-by first (group-by :month (mean-temp-month-year))) (sort-by :month (mean-temp-month))))
