@@ -1,4 +1,4 @@
-(ns assignment-1.task_4
+(ns assignment-1.task_4_old
   (:require [clojure.string :as str]
             [clojure.spec.alpha :as s]))
 
