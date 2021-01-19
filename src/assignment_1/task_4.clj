@@ -18,10 +18,6 @@
 (s/def ::weather-record
   (s/keys :req-un [::day ::month ::year ::temperature]))
 
-(def data [{:year 1 :month 1}
-           {:year 2 :month 1}
-           {}])
-
 (defn get-data
   "Slurps the met office weather data and stores each line in a two dimensional array"
   []
