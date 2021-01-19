@@ -154,6 +154,17 @@
       r
       (recur (inc y) (concat r (mean-temp-month y))))))
 
+(def mean-temp-month-each-year-memo
+  (memoize mean-temp-month-each-year))
+
+(defn smallest-variation [x coll]
+  (take 1 (sort-by :temperature #(< (Math/abs (- x %1)) (Math/abs (- x %2))) coll)))
+
+(defn greatest-variation [x coll]
+  (take 1 (sort-by :temperature #(> (Math/abs (- x %1)) (Math/abs (- x %2))) coll)))
+
+(smallest-variation 34.538411711361576 (filter #(= (:month %) 1) (mean-temp-month-each-year-memo)))
+
 ; (defn find-warmest-day-each-month
 ;   "Finds warmest day for each calendar month"
 ;   []
