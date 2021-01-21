@@ -44,16 +44,16 @@
   (s/coll-of ::weather-record-month-year))
 
 (defn get-data
-  "Slurps from the given url and stores each line in a two dimensional array"
-  ([url]
+  "Slurps from the given url with split rules and stores each line in a two dimensional array"
+  ([url line-split regex-split]
    (as-> (slurp url) x
          (str/triml x)
-         (str/split x #"\s+")
+         (str/split x regex-split)
          (mapv #(Integer/parseInt %) x)
-         (partition 14 x)
+         (partition line-split x)
          (mapv vec x)))
   ([]
-   (get-data "https://www.metoffice.gov.uk/hadobs/hadcet/cetdl1772on.dat")))
+   (get-data "https://www.metoffice.gov.uk/hadobs/hadcet/cetdl1772on.dat" 14 #"\s+")))
 
 (defn make-weather-record
   "Creates a record-like hash-map by mapping values to corresponding keys"
