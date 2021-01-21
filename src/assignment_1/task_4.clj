@@ -6,27 +6,54 @@
   (s/and #(<= 1772 %)
          #(>= 2020 %)
          integer?))
+
 (s/def ::month
   (s/and #(<= 1 %)
          #(>= 12 %)
          integer?))
+
 (s/def ::day
   (s/and #(<= 1 %)
          #(>= 31 %)
          integer?))
+
 (s/def ::temperature float?)
+
 (s/def ::weather-record
   (s/keys :req-un [::day ::month ::year ::temperature]))
 
+(s/def ::weather-record-month
+  (s/keys :req-un [::month ::temperature]))
+
+(s/def ::weather-record-year
+  (s/keys :req-un [::year ::temperature]))
+
+(s/def ::weather-record-month-year
+  (s/keys :req-un [::month ::year ::temperature]))
+
+(s/def ::weather-data
+  (s/coll-of ::weather-record))
+
+(s/def ::weather-data-year
+  (s/coll-of ::weather-record-year))
+
+(s/def ::weather-data-month
+  (s/coll-of ::weather-record-month))
+
+(s/def ::weather-data-month-year
+  (s/coll-of ::weather-record-month-year))
+
 (defn get-data
-  "Slurps the met office weather data and stores each line in a two dimensional array"
-  []
-  (as-> (slurp "https://www.metoffice.gov.uk/hadobs/hadcet/cetdl1772on.dat") x
-        (str/triml x)
-        (str/split x #"\s+")
-        (mapv #(Integer/parseInt %) x)
-        (partition 14 x)
-        (mapv vec x)))
+  "Slurps from the given url and stores each line in a two dimensional array"
+  ([url]
+   (as-> (slurp url) x
+         (str/triml x)
+         (str/split x #"\s+")
+         (mapv #(Integer/parseInt %) x)
+         (partition 14 x)
+         (mapv vec x)))
+  ([]
+   (get-data "https://www.metoffice.gov.uk/hadobs/hadcet/cetdl1772on.dat")))
 
 (defn make-weather-record
   "Creates a record-like hash-map by mapping values to corresponding keys"
@@ -66,11 +93,14 @@
 
 (defn warmest-day-each-month
   "Displays the warmest day for each calendar month"
-  []
-  (map
-    (fn [[key values]]
-      (str (lookup-month-name (- key 1)) " " (str/join " " ((juxt :day :year :temperature) (last (sort-by :temperature values))))))
-    (sort-by first (group-by :month (get-formatted-data-memo)))))
+  ([data]
+   {:pre [(s/valid? ::weather-data data)]}
+   (map
+     (fn [[key values]]
+       (str (lookup-month-name (- key 1)) " " (str/join " " ((juxt :day :year :temperature) (last (sort-by :temperature values))))))
+     (sort-by first (group-by :month data))))
+  ([]
+   (warmest-day-each-month (get-formatted-data-memo))))
 
 (defn average
   "Used to calculate the mean for a collection of numbers"
@@ -79,37 +109,49 @@
 
 (defn mean-temp-each-year
   "Calculates the mean temperature for each year"
-  []
-  (map
-    (fn [[key values]]
-      {:year key
-       :temperature (average (map :temperature values))})
-    (group-by :year (get-formatted-data-memo))))
+  ([data]
+   {:pre [(s/valid? ::weather-data data)]}
+   (map
+     (fn [[key values]]
+       {:year key
+        :temperature (average (map :temperature values))})
+     (group-by :year data)))
+  ([]
+   (mean-temp-each-year (get-formatted-data-memo))))
 
-(defn find-warmest-and-coldest-year
+(defn warmest-and-coldest-year
   "Displays the warmest and coldest years"
-  []
-  (do (str "Warmest: " (str/join " " ((juxt :year :temperature) (last (sort-by :temperature (mean-temp-each-year))))) " "
-           "Coldest: " (str/join " " ((juxt :year :temperature) (first (sort-by :temperature (mean-temp-each-year))))))))
+  ([data]
+   {:pre [(s/valid? ::weather-data-year data)]}
+   (do (str "Warmest year was " (str/join " at a temperature of " ((juxt :year :temperature) (last (sort-by :temperature data)))) " "
+            "and Coldest year was " (str/join " at a temperature of " ((juxt :year :temperature) (first (sort-by :temperature data)))))))
+  ([]
+   (warmest-and-coldest-year (mean-temp-each-year))))
 
 (defn mean-temp-each-month
   "Calculates the mean temperature for each month"
-  []
-  (map
-    (fn [[key values]]
-      {:month key
-       :temperature (average (map :temperature values))})
-    (group-by :month (get-formatted-data-memo))))
+  ([data]
+   {:pre [(s/valid? ::weather-data data)]}
+   (map
+     (fn [[key values]]
+       {:month key
+        :temperature (average (map :temperature values))})
+     (group-by :month data)))
+  ([]
+   (mean-temp-each-month (get-formatted-data-memo))))
 
 (defn mean-temp-each-month-year
   "Calculates the mean temperature for each month in every year"
-  []
-  (map
-    (fn [[key values]]
-      {:year (first key)
-       :month (second key)
-       :temperature (average (map :temperature values))})
-    (group-by (juxt :year :month) (get-formatted-data-memo))))
+  ([data]
+   {:pre [(s/valid? ::weather-data data)]}
+   (map
+     (fn [[key values]]
+       {:year (first key)
+        :month (second key)
+        :temperature (average (map :temperature values))})
+     (group-by (juxt :year :month) data)))
+  ([]
+   (mean-temp-each-month-year (get-formatted-data-memo))))
 
 (defn smallest-variation
   "Sorts a given collection and gets the smallest variation from that temperature"
@@ -123,10 +165,34 @@
 
 (defn greatest-and-smallest-variation
   "Displays the greatest and smallest variation from the mean temperature of each month"
-  []
-  (map
-    (fn [[key coll1] coll2]
-       (str "Greatest and Smallest Variation for " (lookup-month-name (- key 1)) " "
-            (pr-str (concat (map :year (greatest-variation (:temperature coll1) coll))
-                            (map :year (smallest-variation (:temperature coll1) coll))))))
-    (sort-by first (group-by :month (mean-temp-each-month-year))) (sort-by :month (mean-temp-each-month))))
+  ([data1 data2]
+   {:pre [(s/valid? ::weather-data-month-year data1)
+          (s/valid? ::weather-data-month data2)]}
+   (map
+     (fn [[key coll1] coll2]
+        (str "Variation against " (lookup-month-name (- key 1)) " for Greatest: "
+             (str/join " and Smallest: " (concat (map :year (greatest-variation (:temperature coll2) coll1))
+                                                 (map :year (smallest-variation (:temperature coll2) coll1))))))
+     (sort-by first (group-by :month data1)) (sort-by :month data2)))
+  ([]
+   (greatest-and-smallest-variation (mean-temp-each-month-year) (mean-temp-each-month))))
+
+(defn warmest-leap-day
+  "Displays the warmest leap day which is the 29th of February on every leap year"
+  ([data]
+   {:pre [(s/valid? ::weather-data data)]}
+   (str "Warmest leap day was in " (str/join " at a temperature of " ((juxt :year :temperature) (first (sort-by :temperature #(> %1 %2) (filter #(and (= (:month %) 2) (= (:day %) 29)) data)))))))
+  ([]
+   (warmest-leap-day (get-formatted-data-memo))))
+
+(defn mean-temp-each-century
+  "Calculates the mean temperature for each century"
+  ([data]
+   {:pre [(s/valid? ::weather-data data)]}
+   (map
+     (fn [[key values]]
+       {:century (+ key 1)
+        :temperature (average (map :temperature values))})
+     (group-by #(quot (:year %) 100) data)))
+  ([]
+   (mean-temp-each-century (get-formatted-data-memo))))
