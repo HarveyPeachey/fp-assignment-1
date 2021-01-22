@@ -9,15 +9,16 @@
      :else (recur (inc x) (conj c (+ (get combinations x) (get c (- x coin))))))))
 
 (defn change-counter
-  ([coins amount combinations]
-   (if (empty? coins)
-     (last combinations)
-     (recur (rest coins) amount (coin-combination-counter (first coins) amount combinations))))
- ([coins amount]
-  (change-counter (rest coins) amount (vec (replicate (inc amount) (get coins 0))))))
+  ([coins amount]
+   (let [combinations (vec (replicate (inc amount) (first coins)))]
+     (loop [coins (rest coins) c combinations]
+       (if (empty? coins)
+         (last c)
+         (recur (rest coins) (coin-combination-counter (first coins) amount c)))))))
 
 
 ;; To helo me understand the calculation needed to solve the coin combination problem, I watched the first part of
 ;; this YouTube video to understand it as it explains the steps involved to calculate it https://www.youtube.com/watch?v=jaNZ83Q3QGc
 
-;;
+;; Function change-counter -----------------------------------------------------------------------------------------------------------
+;; The main entry point
