@@ -9,14 +9,15 @@
   (s/coll-of ::coin :distinct true))
 
 (s/def ::combinations
-  (s/coll-of integer?))
+  (s/coll-of integer? :kind vector?))
 
 (defn coin-combination-counter
   "Calculates the amount of combinations with the given coin, amount and previous combination calculations"
   [coin amount combinations]
   {:pre [(s/valid? ::coin coin)
          (s/valid? ::amount amount)
-         (s/valid? ::combinations combinations)]}
+         (s/valid? ::combinations combinations)
+         (= (count combinations) (inc amount))]}
   (loop [x 1 c [1]]
    (cond
      (> x amount) c
@@ -28,7 +29,7 @@
   ([coins amount]
    {:pre [(s/valid? ::coins coins)
           (s/valid? ::amount amount)]}
-   (let [coins (sort coins) combinations (vec (replicate (inc amount) (first coins)))]
+   (let [coins (sort coins) combinations (vec (replicate (inc amount) 1))]
      (if (or (not= (first coins) 1) (< amount (first coins)))
       "Sorry bro your coins are too big and/or have a coin with a value of 1"
       (loop [coins (rest coins) c combinations]
