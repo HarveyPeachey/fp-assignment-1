@@ -196,3 +196,5 @@
      (group-by #(quot (:year %) 100) data)))
   ([]
    (mean-temp-each-century (get-formatted-data-memo))))
+
+;; FOOTNOTE: Please read the bottom of task_4_old.clj for an explanation on my original implementation of this task
