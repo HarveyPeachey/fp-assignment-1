@@ -164,3 +164,16 @@
   (take 1 (sort-by :temperature #(> (Math/abs (- x %1)) (Math/abs (- x %2))) items)))
 
 (greatest-variation 34.538411711361576 (filter #(= (:month %) 1) (mean-temp-month-each-year-memo)))
+
+
+;; This is the old implementation of task 4 that made use of loop recur and drop drop-while and take-while
+;; All functions work correctly and produce the correct values however they weren't very efficient
+;; as they where having to traverse values in the collection that have already been processed and when it
+;; came to implementing mean-temp-month-each-year the function would take up to 20 seconds to actually
+;; finish.
+
+;; That's when I started looking through the clojure cheatsheet to try and find a method of processing
+;; the data in chunks with the way that my data has been stored as a collection of hash-maps. I then
+;; found https://clojuredocs.org/clojure.core/group-by which is exactly what I needed and it allowed
+;; me to group values by applying a function to each element, thus allowing me to easily manipulate
+;; my data and make mean-temp-month-each-year 20x more efficient.
