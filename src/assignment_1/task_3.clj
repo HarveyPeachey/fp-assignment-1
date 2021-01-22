@@ -3,7 +3,7 @@
 (defn lookup-plant-name [plants]
   "Used to lookup the full name of a plant given it's shorthand character"
   (let [plant-names {\G "Grass" \C "Clover" \R "Radish" \V "Violet"}]
-    (mapv #(get plant-names %) plants)))
+    (vec (remove nil? (map #(get plant-names %) plants)))))
 
 (defn find-childs-plants [child garden]
   "Retrieves corresponding plants from the garden owned by a given child"
