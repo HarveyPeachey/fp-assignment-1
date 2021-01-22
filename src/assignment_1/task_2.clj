@@ -1,6 +1,7 @@
 (ns assignment-1.task_2 "Task 2 - Change Counter")
 
 (defn coin-combination-counter
+  "Calculates the amount of combinations with the given coin, amount and previous combination calculations"
   [coin amount combinations]
   (loop [x 1 c [1]]
    (cond
@@ -9,16 +10,18 @@
      :else (recur (inc x) (conj c (+ (get combinations x) (get c (- x coin))))))))
 
 (defn change-counter
+  "Used to go through each coin in the given vector and produces the total amount of permutations"
   ([coins amount]
    (let [combinations (vec (replicate (inc amount) (first coins)))]
      (loop [coins (rest coins) c combinations]
        (if (empty? coins)
-         (last c)
-         (recur (rest coins) (coin-combination-counter (first coins) amount c)))))))
-
+         (str "Combinations for an amount of " amount " is " (last c))
+         (recur (rest coins) (coin-combination-counter (first coins) amount c))))))
+  ([amount]
+   (change-counter [1 5 10 25] amount)))
 
 ;; To helo me understand the calculation needed to solve the coin combination problem, I watched the first part of
 ;; this YouTube video to understand it as it explains the steps involved to calculate it https://www.youtube.com/watch?v=jaNZ83Q3QGc
 
 ;; Function change-counter -----------------------------------------------------------------------------------------------------------
-;; The main entry point
+;; The main entry point to start the combinations counting process,
