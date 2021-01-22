@@ -11,7 +11,9 @@
         (is (= ["Violet" "Violet"]
                (find-plants "Alice" "VVVVV")) "and a correct garden format")
         (is (= "Uh oh, that's a not a garden..."
-               (find-plants "Alice" '("VVV"))) "and an incorrect garden format")))))
+               (find-plants "Alice" '("VVV"))) "and an incorrect garden format")
+        (is (= "Uh oh, that's a not a garden..."
+               (find-plants "Alice" [[\R \C] 1 2 '(\V \V)])) "and a garden format which contains an incorrect row data structure")))))
 
 (deftest format-garden-test
   (testing "Garden formatter"
@@ -23,21 +25,6 @@
         (is (= [[\A \B \C \D \E \F \G \H \I \J \K \L \M \N \O \P \Q \R \S \T \U \V \W \X]
                 [\Y \Z]]
                (format-garden "ABCDEFGHIJKLMNOPQRSTUVWXYZ")))))))
-
-; (deftest find-childs-plants-test
-;   (testing "Finding a childs plants"
-;     (testing "when called with"
-;       (testing "a given child string"
-;         (testing "that has a default garden of 48 plants"
-;           (is (= ["Violet" "Radish" "Violet" "Radish"]
-;                  (find-childs-plants "Alice" [[\V \V]] "exists in the class")))
-;           (is (= "Feed me, Seymour! That child doesn't like plants"
-;                  (find-childs-plants "Harvey" [[\V \V]])) "doesn't exist in the class"))
-;         (testing "that has a obscure garden that's added an extra row"
-;           (is (= ["Violet" "Radish" "Violet" "Radish" "Grass"]
-;                  (find-childs-plants "Alice" [[\V \V]])) "with a child who has a plant on it")
-;           (is (= ["Clover" "Grass" "Clover" "Clover"]
-;                  (find-childs-plants "Bob" [[\V \V]])) "with a child who hasn't got a plant on it"))))))
 
 (deftest find-childs-plants-test
   (let [garden  [[\V \R \C \G \V \V \R \V \C \G \G \C \C \G \V \R \G \C \V \C \G \C \G \V]
@@ -59,9 +46,8 @@
             (is (= ["Clover" "Grass" "Clover" "Clover"]
                    (find-childs-plants "Bob" garden2)) "with a child who hasn't got a plant on it")))))))
 
-
 (deftest lookup-plant-name-test
   (testing "Looking up a plant name"
     (testing "when given a shorthand"
       (is (= ["Violet"] (lookup-plant-name "V")) "that exists")
-      (is (= [nil] (lookup-plant-name "P")) "that doesn't exist"))))
+      (is (= [] (lookup-plant-name "P")) "that doesn't exist"))))
