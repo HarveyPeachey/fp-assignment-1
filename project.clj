@@ -5,7 +5,8 @@
             :url "https://www.eclipse.org/legal/epl-2.0/"}
   :dependencies [[org.clojure/clojure "1.10.1"]
                  [proto-repl "0.3.1"]
-                 [proto-repl-charts "0.3.1"]]
+                 [proto-repl-charts "0.3.1"]
+                 [org.clojure/test.check "1.1.0"]]
   :main ^:skip-aot assignment-1.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all
