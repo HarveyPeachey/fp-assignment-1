@@ -176,4 +176,4 @@
 ;; the data in chunks with the way that my data has been stored as a collection of hash-maps. I then
 ;; found https://clojuredocs.org/clojure.core/group-by which is exactly what I needed and it allowed
 ;; me to group values by applying a function to each element, thus allowing me to easily manipulate
-;; my data and make mean-temp-month-each-year 20x more efficient.
+;; my data and make mean-temp-month-each-year 20x more efficient and other functions more performant.
