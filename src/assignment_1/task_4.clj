@@ -45,11 +45,14 @@
   (s/coll-of ::weather-record-month-year))
 
 (s/def ::row-data
-  (s/coll-of integer? :count 14))
+  (s/coll-of integer? :count 14 :kind vector?))
+
+(s/def ::raw-data
+  (s/coll-of ::row-data))
 
 ;; Data retrieval, parsing and formatting ----------------------------------------------------------------------------------------------------------
 (defn get-data
-  "Slurps from the given url with split rules and stores each line as an array stored in a sequence"
+  "Slurps from the given url with split rules and stores each line as a vector contained in a sequence"
   ([url line-split regex-split]
    (try
        (as-> (slurp url) x
@@ -90,8 +93,11 @@
 
 (defn get-formatted-data
   "Formats the fetched data by mapping over each row creating weather records"
-  []
-  (mapcat #(create-weather-records %) (get-data)))
+  ([raw-data]
+   {:pre [(s/valid? ::raw-data raw-data)]}
+   (mapcat #(create-weather-records %) raw-data))
+  ([]
+   (get-formatted-data (get-data))))
 
 (def get-formatted-data-memo
   "Memoizes the get-formatted-data function so it doesn't have to process the data when recalled"
