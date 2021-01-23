@@ -44,25 +44,32 @@
 (s/def ::weather-data-month-year
   (s/coll-of ::weather-record-month-year))
 
+(s/def ::row-data
+  (s/coll-of integer? :count 14))
+
 ;; Data retrieval, parsing and formatting ----------------------------------------------------------------------------------------------------------
 (defn get-data
-  "Slurps from the given url with split rules and stores each line in a two dimensional array"
+  "Slurps from the given url with split rules and stores each line as an array stored in a sequence"
   ([url line-split regex-split]
    (try
        (as-> (slurp url) x
              (str/triml x)
              (str/split x regex-split)
-             (mapv #(Integer/parseInt %) x)
+             (map #(Integer/parseInt %) x)
              (partition line-split x)
-             (mapv vec x))
-       (catch Exception e (println (str "caught exception: " e)))))
+             (map vec x))
+       (catch Exception e (str "caught exception: " e))))
   ([]
    (get-data "https://www.metoffice.gov.uk/hadobs/hadcet/cetdl1772on.dat" 14 #"\s+")))
 
 (defn make-weather-record
   "Creates a record-like hash-map by mapping values to corresponding keys"
   [year month day temperature]
-  {:post [(s/valid? ::weather-record %)]}
+  {:pre [(s/valid? ::year year)
+         (s/valid? ::month month)
+         (s/valid? ::day day)
+         (s/valid? number? temperature)]}
+  {:post [(s/valid? ::temperature temperature)]}
   (hash-map :year year
             :month month
             :day day
@@ -71,6 +78,7 @@
 (defn create-weather-records
   "Breaks down the row of data into a sequence of hash-maps"
   [row-data]
+  {:pre [(s/valid? ::row-data row-data)]}
   (loop [x 2 a []]
     (cond
       (> x 13) a
@@ -81,7 +89,7 @@
                                                         (get row-data x)))))))
 
 (defn get-formatted-data
-  "Formats the fetched data into a vector of hash-maps"
+  "Formats the fetched data by mapping over each row creating weather records"
   []
   (mapcat #(create-weather-records %) (get-data)))
 
