@@ -1,7 +1,8 @@
-(ns assignment-1.task_4
+(ns assignment-1.task_4 "Task 4 - Temperature records"
   (:require [clojure.string :as str]
             [clojure.spec.alpha :as s]))
 
+;; Spec definitions---------------------------------------------------------------------------------------------------------------------------------
 (s/def ::year
   (s/and #(<= 1772 %)
          #(>= 2020 %)
@@ -43,6 +44,7 @@
 (s/def ::weather-data-month-year
   (s/coll-of ::weather-record-month-year))
 
+;; Data retrieval, parsing and formatting ----------------------------------------------------------------------------------------------------------
 (defn get-data
   "Slurps from the given url with split rules and stores each line in a two dimensional array"
   ([url line-split regex-split]
@@ -85,12 +87,29 @@
   "Memoizes the get-formatted-data function so it doesn't have to process the data when recalled"
   (memoize get-formatted-data))
 
+;; Task 4 helper functions------------------------------------------------------------------------------------------------------------------------
 (defn lookup-month-name
   "Used to lookup the name of a month"
   [month]
   (let [month-names ["January" "February" "March" "April" "May" "June" "July" "August" "September" "October" "November" "December"]]
     (get month-names month)))
 
+(defn average
+  "Used to calculate the mean for a collection of numbers"
+  [numbers]
+  (/ (reduce + numbers) (count numbers)))
+
+(defn smallest-variation
+  "Sorts a given collection and gets the smallest variation from that temperature"
+  [x coll]
+  (take 1 (sort-by :temperature #(< (Math/abs (- x %1)) (Math/abs (- x %2))) coll)))
+
+(defn greatest-variation
+  "Sorts a given collection and gets the greatest variation from that temperature"
+  [x coll]
+  (take 1 (sort-by :temperature #(> (Math/abs (- x %1)) (Math/abs (- x %2))) coll)))
+
+;; Task 4 question solutions------------------------------------------------------------------------------------------------------------------------
 (defn warmest-day-each-month
   "Displays the warmest day for each calendar month"
   ([data]
@@ -101,11 +120,6 @@
      (sort-by first (group-by :month data))))
   ([]
    (warmest-day-each-month (get-formatted-data-memo))))
-
-(defn average
-  "Used to calculate the mean for a collection of numbers"
-  [numbers]
-  (/ (reduce + numbers) (count numbers)))
 
 (defn mean-temp-each-year
   "Calculates the mean temperature for each year"
@@ -152,16 +166,6 @@
      (group-by (juxt :year :month) data)))
   ([]
    (mean-temp-each-month-year (get-formatted-data-memo))))
-
-(defn smallest-variation
-  "Sorts a given collection and gets the smallest variation from that temperature"
-  [x coll]
-  (take 1 (sort-by :temperature #(< (Math/abs (- x %1)) (Math/abs (- x %2))) coll)))
-
-(defn greatest-variation
-  "Sorts a given collection and gets the greatest variation from that temperature"
-  [x coll]
-  (take 1 (sort-by :temperature #(> (Math/abs (- x %1)) (Math/abs (- x %2))) coll)))
 
 (defn greatest-and-smallest-variation
   "Displays the greatest and smallest variation from the mean temperature of each month"
