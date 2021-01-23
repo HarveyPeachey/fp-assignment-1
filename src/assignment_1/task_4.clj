@@ -48,12 +48,14 @@
 (defn get-data
   "Slurps from the given url with split rules and stores each line in a two dimensional array"
   ([url line-split regex-split]
-   (as-> (slurp url) x
-         (str/triml x)
-         (str/split x regex-split)
-         (mapv #(Integer/parseInt %) x)
-         (partition line-split x)
-         (mapv vec x)))
+   (try
+       (as-> (slurp url) x
+             (str/triml x)
+             (str/split x regex-split)
+             (mapv #(Integer/parseInt %) x)
+             (partition line-split x)
+             (mapv vec x))
+       (catch Exception e (println (str "caught exception: " e)))))
   ([]
    (get-data "https://www.metoffice.gov.uk/hadobs/hadcet/cetdl1772on.dat" 14 #"\s+")))
 
