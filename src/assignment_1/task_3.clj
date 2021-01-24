@@ -1,35 +1,5 @@
 (ns assignment-1.task_3 "Task 3 - Kindergardeners")
 
-(defn lookup-plant-name [plants]
-  "Used to lookup the full name of a plant given it's shorthand character"
-  (let [plant-names {\G "Grass" \C "Clover" \R "Radish" \V "Violet"}]
-    (vec (remove nil? (map #(get plant-names %) plants)))))
-
-(defn find-childs-plants [child garden]
-  "Retrieves corresponding plants from the garden owned by a given child"
-  (let [children ["Alice" "Bob" "Charlie" "David" "Eve" "Fred" "Ginny" "Harriet" "Ileana" "Joseph" "Kincaid" "Larry"]
-        no-plants-row 2]
-    (if (some #(= child %) children)
-      (lookup-plant-name (mapcat #(take no-plants-row (drop (* (.indexOf children child) no-plants-row) %)) garden))
-      "Feed me, Seymour! That child doesn't like plants")))
-
-(defn format-garden [garden]
-  "Used to transform garden into a usable format from a single string"
-  (let [row-size 24]
-    (mapv vec (partition row-size row-size [] garden))))
-
-(defn find-plants
-  "Entry point function to find plants given a name and an optional garden of plants"
-  ([child garden]
-   (letfn [(garden? [g] (and (vector? g) (not (some (complement vector?) g))))]
-    (cond
-      (string? garden) (recur child (format-garden garden))
-      (garden? garden) (find-childs-plants child garden)
-      :else "Uh oh, that's a not a garden...")))
-  ([child]
-   (find-plants child [[\V \R \C \G \V \V \R \V \C \G \G \C \C \G \V \R \G \C \V \C \G \C \G \V]
-                       [\V \R \C \C \C \G \C \R \R \G \V \C \G \C \R \V \V \C \V \G \C \G \C \V]])))
-
 ;; As with the previous tasks I decided to split up the code into reasonble functions that made sense to me.
 ;; From this decision I split the program into 4 different functions.
 
@@ -68,3 +38,33 @@
 ;; Function lookup-plant-name ------------------------------------------------------------------------------------------------------------------
 ;; This function is used to lookup a plant's name when given a shorthand character/string using an anonymous with get on the plant-names map.
 ;; If it doesn't exist then it returns nil.
+
+(defn lookup-plant-name [plants]
+  "Used to lookup the full name of a plant given it's shorthand character"
+  (let [plant-names {\G "Grass" \C "Clover" \R "Radish" \V "Violet"}]
+    (vec (remove nil? (map #(get plant-names %) plants)))))
+
+(defn find-childs-plants [child garden]
+  "Retrieves corresponding plants from the garden owned by a given child"
+  (let [children ["Alice" "Bob" "Charlie" "David" "Eve" "Fred" "Ginny" "Harriet" "Ileana" "Joseph" "Kincaid" "Larry"]
+        no-plants-row 2]
+    (if (some #(= child %) children)
+      (lookup-plant-name (mapcat #(take no-plants-row (drop (* (.indexOf children child) no-plants-row) %)) garden))
+      "Feed me, Seymour! That child doesn't like plants")))
+
+(defn format-garden [garden]
+  "Used to transform garden into a usable format from a single string"
+  (let [row-size 24]
+    (mapv vec (partition row-size row-size [] garden))))
+
+(defn find-plants
+  "Entry point function to find plants given a name and an optional garden of plants"
+  ([child garden]
+   (letfn [(garden? [g] (and (vector? g) (not (some (complement vector?) g))))]
+    (cond
+      (string? garden) (recur child (format-garden garden))
+      (garden? garden) (find-childs-plants child garden)
+      :else "Uh oh, that's a not a garden...")))
+  ([child]
+   (find-plants child [[\V \R \C \G \V \V \R \V \C \G \G \C \C \G \V \R \G \C \V \C \G \C \G \V]
+                       [\V \R \C \C \C \G \C \R \R \G \V \C \G \C \R \V \V \C \V \G \C \G \C \V]])))

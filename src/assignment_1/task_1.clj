@@ -1,18 +1,5 @@
 (ns assignment-1.task_1 "Task 1 - Squaring lists")
 
-(def square #(* % %))
-
-(defn square-list-map [v]
-  (map square (filter number? v)))
-
-(defn square-list-recur [v]
-  (lazy-seq
-    (loop [values (seq v) sqValues []]
-      (cond
-        (empty? values) sqValues
-        (number? (first values)) (recur (rest values) (conj sqValues (square (first values))))
-        :else (recur (rest values) sqValues)))))
-
 ;; I chose to break down the problem into chunks
 ;; so I seperated out functionality into functions that made sense to me.
 
@@ -35,3 +22,16 @@
 
 ;; There probably was a way to implement it using the built in transducers but I thought it would be easier
 ;; to use recursion to solve it.
+
+(def square #(* % %))
+
+(defn square-list-map [v]
+  (map square (filter number? v)))
+
+(defn square-list-recur [v]
+  (lazy-seq
+    (loop [values (seq v) sqValues []]
+      (cond
+        (empty? values) sqValues
+        (number? (first values)) (recur (rest values) (conj sqValues (square (first values))))
+        :else (recur (rest values) sqValues)))))
